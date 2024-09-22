@@ -28,13 +28,4 @@ public class Task implements Serializable {
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-
-    public void update(Task taskUpdated) {
-        this.title = taskUpdated.getTitle();
-        this.description = taskUpdated.getDescription();
-        this.assignee = taskUpdated.getAssignee();
-        this.deadline = taskUpdated.getDeadline();
-        this.status = taskUpdated.getStatus();
-        this.priority = taskUpdated.getPriority();
-    }
 }
