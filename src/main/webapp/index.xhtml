@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+    <title>Sistema de Gestão de Tarefas</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+</h:head>
+
+<h:body>
+    <div class="main">
+        <div class="form">
+            <h:form id="taskForm">
+                <h2>Sistema de Gestão de Tarefas</h2>
+
+                <!-- Search filter -->
+                <div class="form-input-row">
+                    <h:outputLabel for="taskNumber" value="Número:" />
+                    <p:inputText id="taskNumber" value="#{taskBean.searchId}" />
+                </div>
+                <div class="form-input-row">
+                    <h:outputLabel for="taskTitle" value="Título/Descrição:" />
+                    <p:inputTextarea id="taskTitle" value="#{taskBean.searchText}" rows="5"/>
+                </div>
+                <div class="form-select-row">
+                    <div class="item">
+                        <h:outputLabel for="taskAssignee" value="Responsável:" />
+                        <p:selectOneMenu id="taskAssignee" value="#{taskBean.selectedAssignee}">
+                            <f:selectItem itemLabel="Selecione" itemValue="" />
+                            <f:selectItems value="#{taskBean.assigneeList}" var="assignee"
+                                           itemLabel="#{assignee}" itemValue="#{assignee}" />
+                        </p:selectOneMenu>
+                    </div>
+                    <div class="item">
+                        <h:outputLabel for="status" value="Situação:" />
+                        <p:selectOneMenu id="status" value="#{taskBean.selectedStatus}">
+                            <f:selectItem itemLabel="Selecione" itemValue="" />
+                            <f:selectItems value="#{taskBean.statusList}" var="status"
+                                           itemLabel="#{status.description}" itemValue="#{status}" />
+                        </p:selectOneMenu>
+                    </div>
+                    <div class="item">
+                        <h:outputLabel for="selectedDeadline" value="Prazo:" />
+                        <p:calendar id="selectedDeadline" value="#{taskBean.selectedDeadline}" pattern="dd/MM/yyyy"/>
+                    </div>
+                </div>
+                <!-- Search button -->
+                <p:commandButton value="Buscar Tarefas" actionListener="#{taskBean.searchTasks}"
+                                 update=":taskForm:taskTable" />
+
+                <!-- Create Task button -->
+                <p:commandButton value="Nova Tarefa" oncomplete="PF('newTaskDialog').show()"
+                                 update=":taskForm:taskTable"
+                                 styleClass="new-task-btn" />
+
+                <!-- Task list -->
+                <p:dataTable id="taskTable" var="task" value="#{taskBean.taskList}"
+                             emptyMessage="Nenhuma tarefa encontrada."
+                             styleClass="task-table" headerClass="header" rowClasses="odd-row,even-row"
+                             paginator="true" rows="10">
+                    <p:column headerText="Número">
+                        <h:outputText value="#{task.id}" />
+                    </p:column>
+                    <p:column headerText="Título">
+                        <h:outputText value="#{task.title}" />
+                    </p:column>
+                    <p:column headerText="Responsável">
+                        <h:outputText value="#{task.assignee}" />
+                    </p:column>
+                    <p:column headerText="Status">
+                        <h:outputText value="#{task.status.description}" />
+                    </p:column>
+                    <p:column headerText="Prioridade">
+                        <h:outputText value="#{task.priority.description}" />
+                    </p:column>
+                    <p:column headerText="Ações">
+                        <p:commandButton value="Editar"
+                                         oncomplete="PF('editTaskDialog').show()"
+                                         actionListener="#{taskBean.prepareEdit(task)}"
+                                         update=":editTaskForm :taskForm:assignee :editTaskForm:editAssignee"
+                                         styleClass="ui-button-flat" />
+                        <p:commandButton value="Excluir"
+                                         actionListener="#{taskBean.delete(task)}"
+                                         update=":taskForm:taskTable" styleClass="ui-button-flat"/>
+                        <p:commandButton value="Concluir"
+                                         actionListener="#{taskBean.completeTask(task)}"
+                                         update=":taskForm:taskTable" styleClass="ui-button-flat"/>
+                        <p:commandButton value="Visualizar"
+                                         oncomplete="PF('viewTaskDialog').show()"
+                                         actionListener="#{taskBean.prepareView(task)}"
+                                         update=":viewTaskForm" styleClass="ui-button-flat"/>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+
+            <!-- Dialog for new task -->
+            <p:dialog header="Nova Tarefa" widgetVar="newTaskDialog" modal="true" closable="true"
+                      draggable="false" resizable="true" class="popup">
+                <h:form id="newTaskForm">
+                    <p:panelGrid columns="2">
+                        <h:outputLabel for="newTitle" value="Título:" />
+                        <p:inputText id="newTitle" value="#{taskBean.newTask.title}" required="true" />
+                        <h:outputLabel for="newDescription" value="Descrição:" />
+                        <p:inputTextarea id="newDescription" value="#{taskBean.newTask.description}" rows="3" required="true" />
+                        <h:outputLabel for="newAssignee" value="Responsável:" />
+                        <p:selectOneMenu id="newAssignee" value="#{taskBean.newTask.assignee}" required="true">
+                            <f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true"/>
+                            <f:selectItems value="#{taskBean.assigneeList}" var="assignee"
+                                           itemLabel="#{assignee}" itemValue="#{assignee}" />
+                        </p:selectOneMenu>
+                        <h:outputLabel for="newPriority" value="Prioridade:" />
+                        <p:selectOneMenu id="newPriority" value="#{taskBean.newTask.priority}" required="true">
+                            <f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true"/>
+                            <f:selectItems value="#{taskBean.priorityList}" var="priority"
+                                           itemLabel="#{priority.description}" itemValue="#{priority}" />
+                        </p:selectOneMenu>
+                        <h:outputLabel for="newDeadline" value="Prazo:" />
+                        <p:calendar id="newDeadline" value="#{taskBean.newTask.deadline}" pattern="dd/MM/yyyy" required="true"/>
+                    </p:panelGrid>
+                    <p:commandButton value="Cadastrar" actionListener="#{taskBean.saveNewTask}"
+                                     update=":taskForm:taskTable" oncomplete="PF('newTaskDialog').hide()" />
+                </h:form>
+            </p:dialog>
+
+            <!-- Edit Task Dialog -->
+            <p:dialog header="Editar Tarefa" widgetVar="editTaskDialog" modal="true" closable="true"
+                      draggable="false" resizable="true">
+                <h:form id="editTaskForm">
+                    <p:panelGrid columns="2">
+                        <h:outputLabel for="editTitle" value="Título:" />
+                        <p:inputText id="editTitle" value="#{taskBean.editedTask.title}" required="true"/>
+                        <h:outputLabel for="editDescription" value="Descrição:" />
+                        <p:inputTextarea id="editDescription" value="#{taskBean.editedTask.description}" rows="3" required="true" />
+                        <h:outputLabel for="editAssignee" value="Responsável:" />
+                        <p:selectOneMenu id="editAssignee" value="#{taskBean.editedTask.assignee}" required="true">
+                            <f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true"/>
+                            <f:selectItems value="#{taskBean.assigneeList}" var="assignee"
+                                           itemLabel="#{assignee}" itemValue="#{assignee}" />
+                        </p:selectOneMenu>
+                        <h:outputLabel for="editPriority" value="Prioridade:" />
+                        <p:selectOneMenu id="editPriority" value="#{taskBean.editedTask.priority}" required="true">
+                            <f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true"/>
+                            <f:selectItems value="#{taskBean.priorityList}" var="priority"
+                                           itemLabel="#{priority.description}" itemValue="#{priority}"/>
+                        </p:selectOneMenu>
+                        <h:outputLabel for="editStatus" value="Status:" />
+                        <p:selectOneMenu id="editStatus" value="#{taskBean.editedTask.status}" required="true">
+                            <f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true"/>
+                            <f:selectItems  value="#{taskBean.statusList}" var="status"
+                                            itemLabel="#{status.description}" itemValue="#{status}"/>
+                        </p:selectOneMenu>
+                        <h:outputLabel for="editDeadline" value="Prazo:" />
+                        <p:calendar id="editDeadline" value="#{taskBean.editedTask.deadline}" pattern="dd/MM/yyyy"/>
+                    </p:panelGrid>
+                    <p:commandButton value="Salvar" actionListener="#{taskBean.update()}"
+                                     update=":taskForm:taskTable" oncomplete="PF('editTaskDialog').hide()" />
+                </h:form>
+            </p:dialog>
+
+            <!-- Diálogo para detalhes da tarefa -->
+            <p:dialog header="Detalhes da Tarefa" widgetVar="viewTaskDialog" modal="true" resizable="false">
+                <h:form id="viewTaskForm">
+                    <h:panelGrid columns="2" cellpadding="5">
+                        <h:outputLabel value="ID:" />
+                        <h:outputText value="#{taskBean.selectedTask.id}" />
+                        <h:outputLabel value="Título:" />
+                        <h:outputText value="#{taskBean.selectedTask.title}" />
+                        <h:outputLabel value="Descrição:" />
+                        <h:outputText value="#{taskBean.selectedTask.description}" />
+                        <h:outputLabel value="Responsável:" />
+                        <h:outputText value="#{taskBean.selectedTask.assignee}" />
+                        <h:outputLabel value="Prazo:" />
+                        <h:outputText value="#{taskBean.selectedTask.deadline}">
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </h:outputText>
+                        <h:outputLabel value="Status:" />
+                        <h:outputText value="#{taskBean.selectedTask.status.description}" />
+                        <h:outputLabel value="Prioridade:" />
+                        <h:outputText value="#{taskBean.selectedTask.priority.description}" />
+                    </h:panelGrid>
+                </h:form>
+            </p:dialog>
+        </div>
+    </div>
+</h:body>
+</html>
