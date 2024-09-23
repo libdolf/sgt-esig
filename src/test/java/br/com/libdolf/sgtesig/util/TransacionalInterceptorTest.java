@@ -22,7 +22,7 @@ class TransacionalInterceptorTest {
         mockContext = mock(InvocationContext.class);
 
         when(mockEntityManager.getTransaction()).thenReturn(mockTransaction);
-        interceptor.setManager(mockEntityManager); // Usar o método de setter
+        interceptor.setManager(mockEntityManager);
     }
 
     @Test
