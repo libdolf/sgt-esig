@@ -38,11 +38,17 @@ Requisitos implementados:
 ````bash
 mvn clean package 
 ````
-3 - Implante o WAR no Tomcat:
-- Copie o arquivo .war gerado (encontrado na pasta target do seu projeto) para a pasta webapps do diretório Tomcat.
-  Inicie o Tomcat:
+3 - Inicie o Banco de Dados:
+- Na raíz do projeto execute o docker-compose.yml
+````bash
+docker-compose up
+````
 
-4 - Navegue até o diretório bin do Tomcat e execute o script de inicialização:
+4 - Implante o WAR no Tomcat:
+- Copie o arquivo .war gerado (encontrado na pasta target do seu projeto) para a pasta webapps do diretório Tomcat.
+
+5 - Inicie o Tomcat:
+ - Navegue até o diretório bin do Tomcat e execute o script de inicialização:
  - No Windows:
  ````bash 
 catalina.bat start
@@ -51,6 +57,6 @@ catalina.bat start
  ````bash 
 catalina.sh start
  `````
-5 - Acesse a aplicação:
+6 - Acesse a aplicação:
 
 Abra um navegador e acesse http://localhost:8080/sgt-esig/
