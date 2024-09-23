@@ -1,7 +1,7 @@
 ## SISTEMA DE GESTÃO DE TAREFAS
 
 ### Tecnologias usadas
-[![Technologies](https://skillicons.dev/icons?i=java,maven,postgres,hibernate&theme=light)](https://skillicons.dev)
+[![Technologies](https://skillicons.dev/icons?i=java,maven,postgres,hibernate,docker&theme=light)](https://skillicons.dev)
 ### Funcionalidades implementadas
 
 Sistema de gestão de tarefas que salva novas tarefas, busca por Número, Título/Descrição, 
