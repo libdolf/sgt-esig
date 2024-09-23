@@ -8,8 +8,14 @@ Sistema de gestão de tarefas que salva novas tarefas, busca por Número, Títul
 Responsável e etc. Utiliza JSF e Primefaces para estruturar a aplicação MVC. A implementação do
 JPA fica por conta do Hibernate. O banco de dados utilizado é o PostgreeSQL. 
 
+O sistema consegue:
+- Criar uma tarefa
+- Atualizar a tarefa
+- Remover a tarefa
+- Listar tarefas
 
 
+Requisitos implementados:
 - **a) Criar uma aplicação Java Web utilizando JavaServer Faces (JSF)**
 - **b) Utilizar persistência em um banco de dados PostgreSQL**
 - **c) Utilizar JPA**
